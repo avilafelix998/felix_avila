@@ -11,30 +11,33 @@ export const createOrder = (coffee, userId) => {
   };
 
   ordersCollection.push(newOrder);
-
   return newOrder;
 };
 
+// Obtener órdenes de un usuario
 export const getOrders = (userId) => {
-  return ordersCollection.filter((coffee) => coffee.userId === userId);
+  return ordersCollection.filter((order) => order.userId === userId);
 };
 
-// ! FALTA IMPLEMENTAR (NO SE USA EN EL PROYECTO)
+// Obtener orden por ID
 export const getOrderById = (id, userId) => {
-  return (
-    ordersCollection.find(
-      (coffee) => coffee.id === id && coffee.userId === userId
-    ) || null
+  const order = ordersCollection.find(
+    (order) => order.id === id && order.userId === userId
   );
+  
+  return order || null; 
 };
 
-// ! FALTA IMPLEMENTAR (NO SE USA EN EL PROYECTO)
+
 export const deleteOrderById = (id, userId) => {
-  const deletedOrder = ordersCollection.find(
-    (coffee) => coffee.id === id && coffee.userId === userId
+  const orderIndex = ordersCollection.findIndex(
+    (order) => order.id === id && order.userId === userId
   );
-  ordersCollection = ordersCollection.filter(
-    (coffee) => coffee.id !== id && coffee.userId === userId
-  );
-  return deletedOrder;
+
+  if (orderIndex === -1) {
+    return null; 
+  }
+
+  const [deletedOrder] = ordersCollection.splice(orderIndex, 1); 
+  return deletedOrder; 
 };

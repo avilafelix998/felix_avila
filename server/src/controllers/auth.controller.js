@@ -12,9 +12,7 @@ export const signInCtrl = async (req, res) => {
     }
 
     const token = await createJwt(user.id);
-
     res.cookie("token", token, { httpOnly: true });
-
     res.status(200).json({ token, user });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -23,15 +21,26 @@ export const signInCtrl = async (req, res) => {
 
 export const signUpCtrl = async (req, res) => {
   try {
-    // ! Completar la función signUpCtrl
+    const { username, email, password } = req.body;
+
+    if (!username || !email || !password) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    const newUser = await createUser({ username, email, password });
+    const token = await createJwt(newUser.id);
+    res.cookie("token", token, { httpOnly: true });
+
+    const { password: _, ...userWithoutPassword } = newUser;
+    res.status(201).json({ user: userWithoutPassword, token });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-export const signOutCtrl = (_req, res) => {
+export const signOutCtrl = (req, res) => {
   try {
-    // ! Completar la función signOutCtrl
+    res.clearCookie("token");
     res.status(200).json({ message: "Sign out success" });
   } catch (error) {
     res.status(500).json({ message: error.message });

@@ -3,29 +3,52 @@ import "./style.css";
 // Obtener el formulario de inicio de sesión
 const $form = document.getElementById("login-form");
 
-// Añadir un evento de submit al formulario
+
 $form.addEventListener("submit", async (e) => {
-  // Evitar que el formulario recargue la página
+  
   e.preventDefault();
 
-  // Crear un objeto FormData con los datos del formulario
+  
   const formData = new FormData($form);
 
-  // Convertir el objeto FormData a un objeto plano
+  
   const entries = Object.fromEntries(formData.entries());
 
-  // Realizar una solicitud POST a la API de inicio de sesión
-  fetch("http://localhost:4321/auth/sign-in", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(entries),
-  }).then((response) => {
+  try {
+   
+    const response = await fetch("http://localhost:4321/auth/sign-in", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(entries),
+    });
+
     if (response.ok) {
-      // ! REDIRIGIR AL USUARIO A LA PÁGINA PRINCIPAL
+      
+      window.location.href = "/pages/home.html"; 
     } else {
-      // ! MOSTRAR UN MENSAJE DE ERROR AL USUARIO
+     
+      const errorMessage = await response.json();
+      displayMessage(errorMessage.message || "Error en el inicio de sesión. Intenta de nuevo.", "error");
     }
-  });
+  } catch (error) {
+ 
+    displayMessage("Error en la conexión. Intenta de nuevo más tarde.", "error");
+  }
 });
+
+
+function displayMessage(msg, type) {
+  const messageDiv = document.createElement('div');
+  messageDiv.textContent = msg;
+  messageDiv.className = type === "error" ? "text-red-500" : "text-green-500";
+  messageDiv.style.textAlign = "center";
+  messageDiv.style.marginTop = "20px";
+
+
+  $form.appendChild(messageDiv);
+
+  
+ 
+}
